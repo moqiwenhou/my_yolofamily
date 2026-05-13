@@ -1,0 +1,7 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+<div class="card">
+  <h2>注册</h2>
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">注册</button></form>
+</div>
+{% endblock %}

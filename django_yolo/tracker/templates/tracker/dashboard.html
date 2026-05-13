@@ -1,0 +1,41 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+<div class="card">
+  <h2>1) 上传视频</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">上传任务</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>2) 任务列表与跟踪结果</h2>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>输入视频</th><th>状态</th><th>参数</th><th>结果视频</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.id }}</td>
+        <td><a href="{{ task.input_video.url }}">输入文件</a></td>
+        <td>{{ task.status }}</td>
+        <td>weight={{ task.model_weight }}<br>detect_class={{ task.detect_class }}<br>total_frames={{ task.total_frames }}<br>tracked_frames={{ task.tracked_frames }}<br>unique_ids={{ task.unique_ids }}</td>
+        <td>
+          {% if task.output_video %}
+          <video width="360" controls>
+            <source src="{{ task.output_video.url }}" type="video/mp4" />
+          </video>
+          <br><a href="{{ task.output_video.url }}">下载输出视频</a>
+          {% else %}-{% endif %}
+        </td>
+        <td>
+          <form method="post" action="{% url 'run_tracking' task.id %}">{% csrf_token %}<button type="submit">开始跟踪</button></form>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="6">暂无任务</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
